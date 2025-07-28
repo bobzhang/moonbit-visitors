@@ -1,10 +1,10 @@
 {
-  "name": "username/hello",
+  "name": "moonbit-visitors",
   "version": "0.1.0",
   "readme": "README.md",
   "repository": "",
   "license": "Apache-2.0",
-  "keywords": [],
-  "description": "",
+  "keywords": ["visitor-pattern", "design-patterns", "ast", "arithmetic", "expressions", "functional-programming"],
+  "description": "A comprehensive implementation of the Visitor Pattern in MoonBit using arithmetic expressions, demonstrating clean architectural design with multiple visitor implementations including evaluation, printing, optimization, and custom transformations.",
   "source": "src"
 }
