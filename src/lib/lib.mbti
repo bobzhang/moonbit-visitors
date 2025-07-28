@@ -1,0 +1,29 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "username/bobzhang/lib"
+
+// Values
+
+// Errors
+
+// Types and methods
+type Evaluator
+
+type Expr
+
+type NodeCounter
+
+type Optimizer
+
+type Printer
+
+// Type aliases
+
+// Traits
+trait CountVisitor
+
+trait EvalVisitor
+
+trait PrintVisitor
+
+trait TransformVisitor
+
