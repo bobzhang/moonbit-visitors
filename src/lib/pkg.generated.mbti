@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "moonbit-visitors/lib"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub enum Expr {
+  Number(Int32)
+  Add(Expr, Expr)
+  Multiply(Expr, Expr)
+  Subtract(Expr, Expr)
+}
+
+// Type aliases
+
+// Traits
+pub trait IterVisitor {
+  fn visit(Self, Expr) -> Unit
+  fn visit_number(Self, Int32) -> Unit
+  fn visit_add(Self, Expr, Expr) -> Unit
+  fn visit_multiply(Self, Expr, Expr) -> Unit
+  fn visit_subtract(Self, Expr, Expr) -> Unit
+}
