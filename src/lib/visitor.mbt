@@ -103,25 +103,26 @@ impl IterVisitor with fn visit_subtract(self, left, right) {
 
 ///| into a StringBuilder, separated by spaces. Demonstrates how to override
 
-///| only the leaf node handler while inheriting traversal logic.
-priv type PrintVisitor StringBuilder derive(Show)
+///|
+/// only the leaf node handler while inheriting traversal logic.
+priv struct PrintVisitor(StringBuilder)
 
 ///|
 /// Override visit_number to append each number to the StringBuilder
 impl IterVisitor for PrintVisitor with fn visit_number(self, n) {
   // println(n.to_string())
-  self.inner()..write_object(n)..write_string(" ")
+  self.0..write_object(n).write_string(" ")
 }
 
 ///|
 /// Test PrintVisitor - collects all numbers in traversal order
 test {
-  let printer : PrintVisitor = StringBuilder::StringBuilder()
-  printer.visit(Number(1))
-  printer.visit(Add(Number(2), Number(3)))
-  printer.visit(Multiply(Number(4), Number(5)))
-  printer.visit(Subtract(Number(6), Number(7)))
-  inspect(printer, content="PrintVisitor(1 2 3 4 5 6 7 )")
+  let printer = PrintVisitor(StringBuilder())
+  IterVisitor::visit(printer, Number(1))
+  IterVisitor::visit(printer, Add(Number(2), Number(3)))
+  IterVisitor::visit(printer, Multiply(Number(4), Number(5)))
+  IterVisitor::visit(printer, Subtract(Number(6), Number(7)))
+  inspect(printer.0.to_string(), content="1 2 3 4 5 6 7 ")
 }
 
 ///| **CountArrayVisitor**
@@ -132,35 +133,36 @@ test {
 
 ///| into an array. Demonstrates overriding multiple visit methods to
 
-///| capture structural information about the expression tree.
-priv type CountArrayVisitor Array[String] derive(Show)
+///|
+/// capture structural information about the expression tree.
+priv struct CountArrayVisitor(Array[String])
 
 ///|
 /// Collect number values as strings
 impl IterVisitor for CountArrayVisitor with fn visit_number(self, n) {
-  self.inner().push(n.to_string())
+  self.0.push(n.to_string())
 }
 
 ///|
 /// Override visit_add to record the operation before traversing children
 impl IterVisitor for CountArrayVisitor with fn visit_add(self, left, right) {
-  self.inner().push("Add")
-  self.visit(left)
-  self.visit(right)
+  self.0.push("Add")
+  IterVisitor::visit(self, left)
+  IterVisitor::visit(self, right)
 }
 
 ///|
 /// Test CountArrayVisitor - captures both operations and values
 test {
-  let counter : CountArrayVisitor = []
-  counter.visit(Number(1))
-  counter.visit(Add(Number(2), Number(3)))
-  counter.visit(Multiply(Number(4), Number(5)))
-  counter.visit(Subtract(Number(6), Number(7)))
-  inspect(
-    counter,
+  let counter = CountArrayVisitor([])
+  IterVisitor::visit(counter, Number(1))
+  IterVisitor::visit(counter, Add(Number(2), Number(3)))
+  IterVisitor::visit(counter, Multiply(Number(4), Number(5)))
+  IterVisitor::visit(counter, Subtract(Number(6), Number(7)))
+  debug_inspect(
+    counter.0,
     content=(
-      #|CountArrayVisitor(["1", "Add", "2", "3", "4", "5", "6", "7"])
+      #|["1", "Add", "2", "3", "4", "5", "6", "7"]
     ),
   )
 }
