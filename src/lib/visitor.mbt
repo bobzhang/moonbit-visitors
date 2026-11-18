@@ -38,31 +38,34 @@
 
 ///| - `visit_number`: Handles Number nodes (leaf nodes)
 
-///| - `visit_add/multiply/subtract`: Handle binary operation nodes
+///|
+/// - `visit_add/multiply/subtract`: Handle binary operation nodes
 pub trait IterVisitor {
   /// Visit the top-level expression - entry point for traversal
-  visit(Self, Expr) -> Unit = _
+  fn visit(Self, Expr) -> Unit = _
 
   /// Visit a Number node
-  visit_number(Self, Int) -> Unit = _
+  fn visit_number(Self, Int32) -> Unit = _
 
   /// Visit an Add node  
-  visit_add(Self, Expr, Expr) -> Unit = _
+  fn visit_add(Self, Expr, Expr) -> Unit = _
 
   /// Visit a Multiply node
-  visit_multiply(Self, Expr, Expr) -> Unit = _
+  fn visit_multiply(Self, Expr, Expr) -> Unit = _
 
   /// Visit a Subtract node
-  visit_subtract(Self, Expr, Expr) -> Unit = _
+  fn visit_subtract(Self, Expr, Expr) -> Unit = _
 }
 
-///| Default implementation for visit_number - does nothing by default
-impl IterVisitor with visit_number(_, _) {
+///|
+/// Default implementation for visit_number - does nothing by default
+impl IterVisitor with fn visit_number(_, _) {
 
 }
 
-///| Main dispatcher - routes each expression type to its specific visit method
-impl IterVisitor with visit(self, expr) {
+///|
+/// Main dispatcher - routes each expression type to its specific visit method
+impl IterVisitor with fn visit(self, expr) {
   match expr {
     Number(n) => self.visit_number(n)
     Add(left, right) => self.visit_add(left, right)
@@ -71,20 +74,23 @@ impl IterVisitor with visit(self, expr) {
   }
 }
 
-///| Default traversal for Add - visits left then right subtree
-impl IterVisitor with visit_add(self, left, right) {
+///|
+/// Default traversal for Add - visits left then right subtree
+impl IterVisitor with fn visit_add(self, left, right) {
   self.visit(left)
   self.visit(right)
 }
 
-///| Default traversal for Multiply - visits left then right subtree
-impl IterVisitor with visit_multiply(self, left, right) {
+///|
+/// Default traversal for Multiply - visits left then right subtree
+impl IterVisitor with fn visit_multiply(self, left, right) {
   self.visit(left)
   self.visit(right)
 }
 
-///| Default traversal for Subtract - visits left then right subtree
-impl IterVisitor with visit_subtract(self, left, right) {
+///|
+/// Default traversal for Subtract - visits left then right subtree
+impl IterVisitor with fn visit_subtract(self, left, right) {
   self.visit(left)
   self.visit(right)
 }
@@ -100,15 +106,17 @@ impl IterVisitor with visit_subtract(self, left, right) {
 ///| only the leaf node handler while inheriting traversal logic.
 priv type PrintVisitor StringBuilder derive(Show)
 
-///| Override visit_number to append each number to the StringBuilder
-impl IterVisitor for PrintVisitor with visit_number(self, n) {
+///|
+/// Override visit_number to append each number to the StringBuilder
+impl IterVisitor for PrintVisitor with fn visit_number(self, n) {
   // println(n.to_string())
   self.inner()..write_object(n)..write_string(" ")
 }
 
-///| Test PrintVisitor - collects all numbers in traversal order
+///|
+/// Test PrintVisitor - collects all numbers in traversal order
 test {
-  let printer : PrintVisitor = StringBuilder::new()
+  let printer : PrintVisitor = StringBuilder::StringBuilder()
   printer.visit(Number(1))
   printer.visit(Add(Number(2), Number(3)))
   printer.visit(Multiply(Number(4), Number(5)))
@@ -127,19 +135,22 @@ test {
 ///| capture structural information about the expression tree.
 priv type CountArrayVisitor Array[String] derive(Show)
 
-///| Collect number values as strings
-impl IterVisitor for CountArrayVisitor with visit_number(self, n) {
+///|
+/// Collect number values as strings
+impl IterVisitor for CountArrayVisitor with fn visit_number(self, n) {
   self.inner().push(n.to_string())
 }
 
-///| Override visit_add to record the operation before traversing children
-impl IterVisitor for CountArrayVisitor with visit_add(self, left, right) {
+///|
+/// Override visit_add to record the operation before traversing children
+impl IterVisitor for CountArrayVisitor with fn visit_add(self, left, right) {
   self.inner().push("Add")
   self.visit(left)
   self.visit(right)
 }
 
-///| Test CountArrayVisitor - captures both operations and values
+///|
+/// Test CountArrayVisitor - captures both operations and values
 test {
   let counter : CountArrayVisitor = []
   counter.visit(Number(1))
@@ -166,9 +177,10 @@ test {
 
 ///| - Multiply: Binary multiplication
 
-///| - Subtract: Binary subtraction
+///|
+/// - Subtract: Binary subtraction
 pub enum Expr {
-  Number(Int)
+  Number(Int32)
   Add(Expr, Expr)
   Multiply(Expr, Expr)
   Subtract(Expr, Expr)
